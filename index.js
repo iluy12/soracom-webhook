@@ -21,9 +21,11 @@ function md5(str) {
   return crypto.createHash("md5").update(str).digest("hex");
 }
 
-function hmacSha1Base64(data, secret) {
-  return crypto.createHmac("sha1", secret).update(data).digest("base64");
+function zadarmaSignature(data, secret) {
+  const hmacHex = crypto.createHmac("sha1", secret).update(data).digest("hex");
+  return Buffer.from(hmacHex, "utf8").toString("base64");
 }
+
 
 // ---------- Debug endpoints (חשוב) ----------
 app.get("/health", (req, res) => {
@@ -83,7 +85,7 @@ app.post("/zadarma/callback", async (req, res) => {
     const paramsStr = buildQuery({ from, to });
 
     const dataToSign = methodPath + paramsStr + md5(paramsStr);
-    const signature = hmacSha1Base64(dataToSign, ZADARMA_SECRET);
+const signature = zadarmaSignature(dataToSign, ZADARMA_SECRET);
 
     const authHeader = `${ZADARMA_KEY}:${signature}`;
     const url = `https://api.zadarma.com${methodPath}`;
