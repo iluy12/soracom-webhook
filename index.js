@@ -66,8 +66,9 @@ app.post("/zadarma/callback", async (req, res) => {
     }
 
     // 2) בדיקת פרמטרים
-    const from = req.body?.from;
-    const to = req.body?.to;
+  const from = req.body?.from;
+const to = req.body?.to;
+
 
     if (!from || !to) {
       return res.status(400).json({ ok: false, error: "Missing from/to" });
@@ -82,7 +83,7 @@ app.post("/zadarma/callback", async (req, res) => {
 
     // 3) קריאה ל-Zadarma עם חתימה
     const methodPath = "/v1/request/callback/";
-    const paramsStr = buildQuery({ from, to });
+const paramsStr = buildQuery({ from, to, pbx: 1 });
 
     const dataToSign = methodPath + paramsStr + md5(paramsStr);
 const signature = zadarmaSignature(dataToSign, ZADARMA_SECRET);
