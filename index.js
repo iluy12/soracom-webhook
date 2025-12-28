@@ -8,18 +8,32 @@ app.get("/", (req, res) => {
   res.status(200).send("OK");
 });
 
-// נקודת הקליטה של Soracom
+// קליטת אירוע מכפתור Soracom
 app.post("/soracom", (req, res) => {
-  const data = req.body || {};
+  const now = new Date();
 
-  console.log("===== SORACOM EVENT =====");
-  console.log("Time:", new Date().toISOString());
-  console.log("Data:", data);
+  const event = {
+    receivedAt: now.toISOString(),      // זמן קבלה
+    receivedTimestamp: now.getTime(),   // זמן קבלה (מספר)
+    imsi: req.body?.imsi || null,
+    iccid: req.body?.iccid || null,
+    data: req.body || {},
+
+    // שדות לעתיד
+    status: "NEW",                      // NEW / IN_PROGRESS / CLOSED
+    handler: null,                      // מי טיפל
+    handledAt: null,
+    closedAt: null,
+    handlingDurationSec: null
+  };
+
+  console.log("🚨 NEW BUTTON EVENT");
+  console.log(event);
 
   res.status(200).json({ ok: true });
 });
 
-// הפעלה
+// הפעלת השרת
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log("Server running on port", port);
